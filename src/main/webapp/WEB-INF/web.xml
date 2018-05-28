@@ -35,9 +35,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <!--spring配置文件-->
-        <param-value>
-            classpath:applicationContext.xml
-        </param-value>
+        <param-value>classpath:applicationContext.xml</param-value>
     </context-param>
 
     <!--配置spingmvc的拦截-->

@@ -32,11 +32,13 @@
     </mvc:annotation-driven>
 
 
-
     <!-- 文件上传 -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--最大上传size-->
         <property name="maxUploadSize" value="10485760"/> <!-- 10m -->
-        <property name="maxInMemorySize" value="4096" />
+        <!--字节块-->
+        <property name="maxInMemorySize" value="4096"/>
+        <!--编码方式-->
         <property name="defaultEncoding" value="UTF-8"></property>
     </bean>
 
