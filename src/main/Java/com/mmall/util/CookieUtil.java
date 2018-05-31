@@ -64,6 +64,7 @@ public class CookieUtil {
         Cookie ck = new Cookie(COOKIE_NAME, token);
         ck.setDomain(COOKIE_DOAMIN);
         ck.setPath("/");//代表设置在根目录下
+        ck.setHttpOnly(true);//不许通过脚本来获取cookie信息
 
         ck.setMaxAge(60 * 60 * 24 * 365);
         log.info("write cookieName:{},cookieValue:{}", ck.getName(), ck.getValue());
