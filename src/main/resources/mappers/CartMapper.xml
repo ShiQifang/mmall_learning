@@ -46,7 +46,7 @@
       FROM mmall_cart
       WHERE user_id=#{userId}
     </select>
-    <select id="selectCheckedCartByUserId" parameterMap="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectCheckedCartByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM mmall_cart

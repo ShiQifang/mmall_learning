@@ -3,16 +3,15 @@ package com.mmall.common;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Administrator on 2018/5/18.
  */
+@Slf4j
 public class TokenCache {
-    private static Logger logger = LoggerFactory.getLogger(TokenCache.class);
 
     public static final String TOKEN_PREFIX = "token_";
     private static LoadingCache<String, String> localCache = CacheBuilder.newBuilder().initialCapacity(1000).maximumSize(10000).expireAfterAccess(12, TimeUnit.HOURS)
@@ -37,7 +36,7 @@ public class TokenCache {
             }
             return value;
         } catch (Exception e) {
-            logger.error("localCache get Error", e);
+            log.error("localCache get Error", e);
         }
         return null;
     }

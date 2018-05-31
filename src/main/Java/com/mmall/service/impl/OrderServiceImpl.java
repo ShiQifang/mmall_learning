@@ -13,7 +13,6 @@ import com.alipay.demo.trade.service.impl.AlipayMonitorServiceImpl;
 import com.alipay.demo.trade.service.impl.AlipayTradeServiceImpl;
 import com.alipay.demo.trade.service.impl.AlipayTradeWithHBServiceImpl;
 import com.alipay.demo.trade.utils.ZxingUtils;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
@@ -31,11 +30,9 @@ import com.mmall.vo.OrderItemVo;
 import com.mmall.vo.OrderProductVo;
 import com.mmall.vo.OrderVo;
 import com.mmall.vo.ShippingVo;
-import com.mysql.fabric.Server;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,6 +46,7 @@ import java.util.*;
  * Created by Administrator on 2018/5/27.
  */
 @Service("iOrderService")
+@Slf4j
 public class OrderServiceImpl implements IOrderService {
     @Autowired
     OrderMapper orderMapper;
@@ -68,7 +66,6 @@ public class OrderServiceImpl implements IOrderService {
     @Autowired
     ShippingMapper shippingMapper;
 
-    private static Log log = LogFactory.getLog(OrderServiceImpl.class);
 
     public ServerResponse createOrder(Integer userId, Integer shippingId) {
         //从购物车中获取数据
