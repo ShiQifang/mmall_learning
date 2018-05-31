@@ -3,12 +3,16 @@ package com.mmall.controller.portal;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.demo.trade.config.Configs;
+import com.github.pagehelper.StringUtil;
 import com.google.common.collect.Maps;
 import com.mmall.common.Const;
 import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
 import com.mmall.service.IOrderService;
+import com.mmall.util.CookieUtil;
+import com.mmall.util.JsonUtil;
+import com.mmall.util.RedisPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,8 +37,13 @@ public class OrderController {
 
     @RequestMapping("create.do")
     @ResponseBody
-    public ServerResponse create(HttpSession session, Integer shippingId) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse create(HttpServletRequest httpServletRequest, Integer shippingId) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtil.isEmpty(loginToken))
+            return ServerResponse.createByErrorMessage("用户未登录，无法获取当前用户的信息");
+        String userJsonStr = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.string2Obj(userJsonStr, User.class);
+
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
         return iOrderService.createOrder(user.getId(), shippingId);
@@ -43,8 +52,12 @@ public class OrderController {
 
     @RequestMapping("cancel.do")
     @ResponseBody
-    public ServerResponse cancel(HttpSession session, Long orderNo) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse cancel(HttpServletRequest httpServletRequest, Long orderNo) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtil.isEmpty(loginToken))
+            return ServerResponse.createByErrorMessage("用户未登录，无法获取当前用户的信息");
+        String userJsonStr = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.string2Obj(userJsonStr, User.class);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
         return iOrderService.cancel(user.getId(), orderNo);
@@ -58,8 +71,12 @@ public class OrderController {
      */
     @RequestMapping("get_order_cart_product.do")
     @ResponseBody
-    public ServerResponse getOrderCartProduct(HttpSession session) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse getOrderCartProduct(HttpServletRequest httpServletRequest) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtil.isEmpty(loginToken))
+            return ServerResponse.createByErrorMessage("用户未登录，无法获取当前用户的信息");
+        String userJsonStr = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.string2Obj(userJsonStr, User.class);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
         return iOrderService.getOrderCartProduct(user.getId());
@@ -67,8 +84,12 @@ public class OrderController {
 
     @RequestMapping("detail.do")
     @ResponseBody
-    public ServerResponse detail(HttpSession session, Long orderNO) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse detail(HttpServletRequest httpServletRequest, Long orderNO) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtil.isEmpty(loginToken))
+            return ServerResponse.createByErrorMessage("用户未登录，无法获取当前用户的信息");
+        String userJsonStr = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.string2Obj(userJsonStr, User.class);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
         return iOrderService.getOrderDetail(user.getId(), orderNO);
@@ -76,8 +97,13 @@ public class OrderController {
 
     @RequestMapping("list.do")
     @ResponseBody
-    public ServerResponse list(HttpSession session, @RequestParam(value = "pageNum", defaultValue = "1") int pageNum, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse list(HttpServletRequest httpServletRequest, @RequestParam(value = "pageNum", defaultValue = "1") int pageNum, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtil.isEmpty(loginToken))
+            return ServerResponse.createByErrorMessage("用户未登录，无法获取当前用户的信息");
+        String userJsonStr = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.string2Obj(userJsonStr, User.class);
+
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
         return iOrderService.getOrderList(user.getId(), pageNum, pageSize);
@@ -87,8 +113,12 @@ public class OrderController {
     //使用Request获取servlet的上下文，拿到upload文件夹,将自动生成的二维码图片地址传给前端。
     @RequestMapping("pay.do")
     @ResponseBody
-    public ServerResponse pay(HttpSession session, Long orderNo, HttpServletRequest request) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse pay(HttpServletRequest httpServletRequest, Long orderNo, HttpServletRequest request) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtil.isEmpty(loginToken))
+            return ServerResponse.createByErrorMessage("用户未登录，无法获取当前用户的信息");
+        String userJsonStr = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.string2Obj(userJsonStr, User.class);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
         String path = request.getSession().getServletContext().getRealPath("upload");
@@ -135,8 +165,12 @@ public class OrderController {
 
     @RequestMapping("query_order_pay_status.do")
     @ResponseBody
-    public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session, Long orderNo) {
-        User user = (User) session.getAttribute(Const.CURRENT_USER);
+    public ServerResponse<Boolean> queryOrderPayStatus(HttpServletRequest httpServletRequest, Long orderNo) {
+        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        if (StringUtil.isEmpty(loginToken))
+            return ServerResponse.createByErrorMessage("用户未登录，无法获取当前用户的信息");
+        String userJsonStr = RedisPoolUtil.get(loginToken);
+        User user = JsonUtil.string2Obj(userJsonStr, User.class);
         if (user == null)
             return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), ResponseCode.NEED_LOGIN.getDesc());
         ServerResponse serverResponse = iOrderService.queryOrderPayStatus(user.getId(), orderNo);

@@ -8,6 +8,7 @@ import java.util.Set;
  * Created by Administrator on 2018/5/17.
  */
 public class Const {
+    public final static String TOKEN_PREFIX = "token_";
     public final static String CURRENT_USER = "currentUser";
 
     public static final String EMAIL = "email";
