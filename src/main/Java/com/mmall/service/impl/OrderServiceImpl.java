@@ -33,6 +33,7 @@ import com.mmall.vo.ShippingVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -531,6 +532,30 @@ public class OrderServiceImpl implements IOrderService {
             return ServerResponse.createBySuccess("发货成功");
         }
         return ServerResponse.createByErrorMessage("发货失败");
+    }
+
+    @Override
+    public void closeOrder(int hour) {
+        Date closeDateTime = DateUtils.addHours(new Date(), -hour);
+        List<Order> orderList = orderMapper.selectOrderByStatusByCreateTime(Const.OrderStatusEnum.NO_PAY.getCode(), DateTimeUtil.dateToStr(closeDateTime));
+        for (Order order : orderList) {
+            List<OrderItem> orderItemList = orderItemMapper.getByOrderNoAndUserId(order.getOrderNo(), null);
+            for (OrderItem orderItem : orderItemList) {
+                //一定要用主键WHERE条件，防止锁表。同时必须支持MYSQL的INNODB引擎
+                Integer stock = productMapper.selectStockByProductId(orderItem.getProductId());
+                //考虑到已经生成的订单的产品，被删除的情况
+                if (stock == null) {
+                    continue;
+                }
+                Product product = new Product();
+                product.setId(orderItem.getProductId());
+                product.setStock(orderItem.getQuantity() + stock);
+                productMapper.updateByPrimaryKeySelective(product);
+            }
+            orderMapper.closeOrderBYOrderId(order.getId());
+            log.info("关闭订单orderNO:{}", order.getOrderNo());
+        }
+
     }
 
 }

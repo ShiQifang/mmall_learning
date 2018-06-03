@@ -24,7 +24,7 @@
     </filter-mapping>
 
     <!--二期重置session时间的filter-->
-    <filter>
+    <!--<filter>
         <filter-name>sessionExpireFilter</filter-name>
         <filter-class>com.mmall.controller.common.SessionExpireFilter</filter-class>
     </filter>
@@ -32,6 +32,17 @@
         <filter-name>sessionExpireFilter</filter-name>
         <url-pattern>*.do</url-pattern>
     </filter-mapping>
+    -->
+    <!--使用springSession-->
+    <filter>
+        <filter-name>springSessionRepositoryFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSessionRepositoryFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
 
     <!--负责监听容器的启动和关闭-->
     <listener>
@@ -55,9 +66,17 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <servlet-mapping>
+
+    <!--<servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+    -->
+
+
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
 
 </web-app>
